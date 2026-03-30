@@ -1,23 +1,20 @@
 [meta]
 id          = "cone_solid"
-name        = "Cone"
+name        = "圆锥"
 category    = "solid"
 version     = "1.0"
 author      = "ScriptGeometry"
-description = "A simple cone solid"
+description = "圆锥体"
 
 [attrs]
-radius   float  1.0   "Radius"      "Base radius of the cone"
-height   float  2.0   "Height"      "Total height of the cone"
-sectors  int    32    "Sectors"     "Number of angular subdivisions"
+radius   float   1.0     "半径"     "底面半径"
+height   float   2.0     "高度"     "圆锥高度"
+sectors  int     32      "扇区数"   "底面细分"
 
 [code]
-void build(GeoDataHandle h) {
-    /* Parameters are accessed via the host-injected global scope.
-       For demonstration they are hardcoded here; the host will
-       supply per-entity attribute values via a wrapper. */
-    float r  = 1.0f;
-    float ht = 2.0f;
-    int   s  = 32;
-    solid_cone(h, 0.0f, 0.0f, 0.0f, r, ht, s);
+void build(Entity entity, GeoData geo) {
+    float r = entity_getFloat(entity, "radius");
+    float h = entity_getFloat(entity, "height");
+    int s = entity_getInt(entity, "sectors");
+    solid_cone(geo, 0.0f, 0.0f, 0.0f, r, h, s);
 }

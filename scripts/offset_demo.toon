@@ -1,0 +1,30 @@
+[meta]
+id          = "offset_demo"
+name        = "Offset Demo"
+category    = "surface"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "Demonstrates polygon offset (inflate/deflate)"
+
+[attrs]
+delta   float  0.2  "Delta"   "Offset amount (positive=inflate, negative=deflate)"
+
+[code]
+void build(GeoDataHandle h) {
+    /* Original polygon - star shape */
+    float r1 = 1.5f;
+    float r2 = 0.7f;
+    int n = 5;
+
+    /* Simple star polygon (10 points) */
+    float star[20];
+    for (int i = 0; i < 10; i++) {
+        float a = 3.14159f * i / 5.0f - 1.5708f;
+        float r = (i % 2 == 0) ? r1 : r2;
+        star[i*2]     = r * cos(a);
+        star[i*2 + 1] = r * sin(a);
+    }
+
+    /* Offset the polygon (joinType: 0=Square, 1=Round, 2=Miter) */
+    loop_offset(h, star, 10, 0.2f, 1);
+}

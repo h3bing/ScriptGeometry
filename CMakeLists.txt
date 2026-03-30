@@ -72,6 +72,31 @@ if(NOT TCC_LIB)
 endif()
 
 # ============================================================
+#  Clipper2 (polygon boolean operations)
+# ============================================================
+
+set(CLIPPER2_DIR ${CMAKE_SOURCE_DIR}/third_party/clipper2/Clipper2Lib)
+set(CLIPPER2_SOURCES
+    ${CLIPPER2_DIR}/src/clipper.engine.cpp
+    ${CLIPPER2_DIR}/src/clipper.offset.cpp
+    ${CLIPPER2_DIR}/src/clipper.rectclip.cpp
+    ${CLIPPER2_DIR}/src/clipper.triangulation.cpp
+)
+set(CLIPPER2_INCLUDE ${CLIPPER2_DIR}/include)
+
+# ============================================================
+#  earcut.hpp (polygon triangulation, header-only)
+# ============================================================
+
+set(EARCUT_INCLUDE ${CMAKE_SOURCE_DIR}/third_party/earcut)
+
+# ============================================================
+#  nlohmann/json (JSON serialization, header-only)
+# ============================================================
+
+set(JSON_INCLUDE ${CMAKE_SOURCE_DIR}/third_party/json)
+
+# ============================================================
 #  Source files
 # ============================================================
 
@@ -87,6 +112,7 @@ set(SG_SOURCES
     src/main.cpp
     ${GLAD_SOURCES}
     ${IMGUI_SOURCES}
+    ${CLIPPER2_SOURCES}
 )
 
 # ============================================================
@@ -101,6 +127,9 @@ target_include_directories(ScriptGeometry PRIVATE
     ${IMGUI_DIR}
     ${IMGUI_DIR}/backends
     ${TCC_INCLUDE}
+    ${CLIPPER2_INCLUDE}
+    ${EARCUT_INCLUDE}
+    ${JSON_INCLUDE}
 )
 
 target_link_libraries(ScriptGeometry PRIVATE

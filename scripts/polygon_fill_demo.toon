@@ -1,0 +1,26 @@
+[meta]
+id          = "polygon_fill_demo"
+name        = "Polygon Fill Demo"
+category    = "surface"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "Demonstrates triangulated polygon fill with a hole"
+
+[attrs]
+size    float  2.0  "Size"    "Outer square size"
+holeSz  float  0.5  "Hole"    "Hole size ratio (0-1)"
+
+[code]
+void build(GeoDataHandle h) {
+    /* Outer square centered at origin */
+    float s = 2.0f;
+    float outer[] = {-s,-s, s,-s, s,s, -s,s};
+
+    /* Inner hole (smaller square) */
+    float h = s * 0.5f;
+    float hole[] = {-h,-h, h,-h, h,h, -h,h};
+    int holeCount = 4;
+
+    /* Triangulate with hole - creates filled square with square hole */
+    loop_fill_with_holes(h, outer, 4, hole, &holeCount, 1);
+}

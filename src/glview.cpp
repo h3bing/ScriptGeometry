@@ -371,6 +371,10 @@ void GlView::removeEntity(uint64_t entityId) {
     if (it != buffers_.end()) buffers_.erase(it);
 }
 
+void GlView::clearAll() {
+    buffers_.clear();
+}
+
 void GlView::render(int width, int height) {
     glViewport(0, 0, width, height);
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);

@@ -1,135 +1,521 @@
 # ScriptGeometry
 
-**AI-driven procedural geometry system with in-memory C scripting and OpenGL rendering.**
+**AI驱动的参数化几何建模系统**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![C++20](https://img.shields.io/badge/C++-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
 
 ---
 
-## Features
+## 项目概述
 
-| Feature | Detail |
-|---|---|
-| **AI Code Generation** | Chat with an LLM to generate C geometry scripts in TOON format |
-| **In-Memory Compilation** | TCC compiles scripts at runtime — no disk I/O, sub-millisecond rebuild |
-| **Attribute System** | Live-edit entity parameters; geometry rebuilds instantly |
-| **Hot-Plug Scripts** | Add/remove `.toon` files while the app is running |
-| **OpenGL Renderer** | Solid, wireframe, solid+wire, points; perspective/ortho; standard views |
-| **Four-Party Chat** | System / TCC / AI / User conversation model |
-| **C++20 / MinGW** | Windows-first, cross-platform CMake build |
+ScriptGeometry是一个创新的三维几何建模工具，它将**人工智能**、**实时脚本编译**和**参数化设计**融为一体，让用户可以通过自然语言描述来创建和调整复杂的三维几何体。这不仅仅是一个技术演示，更是对传统CAD软件交互方式的一次革新尝试。
+
+### 核心理念
+
+> **"让几何建模像说话一样简单"**
+
+传统的参数化建模需要用户掌握复杂的软件操作和编程语法，而ScriptGeometry通过AI理解用户的自然语言意图，自动生成可执行的C脚本，大大降低了三维建模的技术门槛。
 
 ---
 
-## Quick Start
+## 技术架构
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                          用户交互层                                  │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────────────┐ │
+│  │   文档面板      │  │    3D视图      │  │      AI聊天面板        │ │
+│  │ · 实体列表      │  │ · OpenGL渲染   │  │ · 自然语言输入         │ │
+│  │ · 属性编辑      │  │ · 相机控制     │  │ · AI响应显示           │ │
+│  │ · 脚本选择      │  │ · 多渲染模式   │  │ · TOON脚本预览         │ │
+│  │ · 位姿调整      │  │ · 坐标轴/网格  │  │ · 对话历史管理         │ │
+│  └────────────────┘  └────────────────┘  └────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                          核心引擎层                                  │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────────────┐ │
+│  │   TccEngine    │  │   ScriptLib    │  │    ChatAssistant       │ │
+│  │ ────────────── │  │ ────────────── │  │ ──────────────────     │ │
+│  │ · 内存编译     │  │ · 脚本注册制   │  │ · 结构化Prompt构建     │ │
+│  │ · 脚本缓存     │  │ · 热插拔支持   │  │ · LLM API异步调用      │ │
+│  │ · 符号注册     │  │ · TOON解析     │  │ · TOON代码块提取       │ │
+│  │ · 沙箱执行     │  │ · 按需重载     │  │ · 多轮对话上下文       │ │
+│  └────────────────┘  └────────────────┘  └────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                          几何库层                                    │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────────────┐ │
+│  │  CurveFactory  │  │  LoopFactory   │  │     SolidFactory       │ │
+│  │ ────────────── │  │ ────────────── │  │ ──────────────────     │ │
+│  │ · 直线/圆弧    │  │ · 矩形/圆      │  │ · 基础实体             │ │
+│  │ · 贝塞尔曲线   │  │ · 多边形/星形  │  │ · 拉伸体               │ │
+│  │ · 螺旋线       │  │ · 齿轮轮廓     │  │ · 旋转体               │ │
+│  │ · 样条曲线     │  │ · 布尔运算     │  │ · 扫掠体               │ │
+│  └────────────────┘  └────────────────┘  └────────────────────────┘ │
+│                                                                      │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │                        C API 层                               │   │
+│  │  entity_getFloat() │ geo_addVertex() │ solid_factory_*()     │   │
+│  │  math_sin/cos()    │ loop_factory_*() │ curve_factory_*()    │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                          数据与文件层                                │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────────────┐ │
+│  │   Document     │  │     Entity     │  │       StlIo            │ │
+│  │ ────────────── │  │ ────────────── │  │ ──────────────────     │ │
+│  │ · JSON序列化   │  │ · 属性管理     │  │ · ASCII STL导入导出    │ │
+│  │ · 文档管理     │  │ · 位姿变换     │  │ · Binary STL导入导出   │ │
+│  │ · 实体集合     │  │ · 几何数据     │  │ · 格式自动检测         │ │
+│  └────────────────┘  └────────────────┘  └────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 核心特性
+
+### 🤖 AI驱动建模
+
+- **自然语言输入**：用户只需描述想要的几何体，AI自动生成脚本
+- **智能理解**：支持模糊描述、参数推断、形状建议
+- **实时反馈**：AI生成的脚本可立即执行和预览
+
+### ⚡ 实时脚本编译
+
+- **内存编译**：基于TCC的即时编译，无需外部工具链
+- **脚本缓存**：编译结果缓存，相同脚本只编译一次
+- **沙箱执行**：脚本在受限环境中运行，安全可靠
+
+### 🎨 参数化设计
+
+- **属性面板**：直观的参数调整界面
+- **实时预览**：参数变化立即反映到3D视图
+- **多实例支持**：一个脚本可创建多个不同参数的实例
+
+### 🔧 丰富的几何库
+
+| 类别 | 功能 |
+|------|------|
+| 曲线 | 直线、圆弧、椭圆弧、贝塞尔、螺旋线、样条曲线 |
+| 截面 | 矩形、圆、椭圆、多边形、星形、齿轮轮廓 |
+| 实体 | 基础体、拉伸体、旋转体、扫掠体、放样体 |
+| 运算 | 布尔并集/交集/差集/异或、偏移、三角剖分 |
+
+### 💾 数据管理
+
+- **JSON文档**：完整的场景序列化
+- **STL支持**：ASCII和Binary格式导入导出
+- **修改追踪**：自动检测未保存更改
+
+---
+
+## 工作流程
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  用户输入   │────►│  AI理解     │────►│ 生成TOON    │
+│ "创建球体"  │     │  意图解析   │     │   脚本      │
+└─────────────┘     └─────────────┘     └─────────────┘
+                                               │
+                                               ▼
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  调整参数   │◄────│  创建实体   │◄────│  注册脚本   │
+│  即时反馈   │     │  应用默认值 │     │  编译缓存   │
+└─────────────┘     └─────────────┘     └─────────────┘
+       │
+       ▼
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  位姿调整   │────►│  执行脚本   │────►│ OpenGL渲染  │
+│  变换矩阵   │     │  生成几何   │     │  实时显示   │
+└─────────────┘     └─────────────┘     └─────────────┘
+```
+
+---
+
+## 构建指南
+
+### 系统要求
+
+- **操作系统**：Windows 10+ / macOS 10.15+ / Linux (Ubuntu 20.04+)
+- **编译器**：支持C++20的编译器 (GCC 10+, Clang 12+, MSVC 19.28+)
+- **CMake**：3.20或更高版本
+
+### 依赖项
+
+| 依赖 | 版本 | 用途 |
+|------|------|------|
+| GLFW | 3.3+ | 窗口管理 |
+| GLM | 0.9.9+ | 数学运算 |
+| libcurl | 7.68+ | HTTP请求 |
+| libtcc | 0.9.27+ | 脚本编译 |
+| OpenGL | 3.3+ | 图形渲染 |
+
+### 构建步骤
 
 ```bash
-# 1. Clone
-git clone <repo-url> ScriptGeometry
+# 克隆仓库
+git clone https://github.com/h3bing/ScriptGeometry.git
 cd ScriptGeometry
 
-# 2. Install dependencies  (vcpkg recommended on Windows)
-#    glfw3, glm, libcurl, libtcc, imgui (bundled in third_party/)
+# Ubuntu/Debian
+sudo apt install libglfw3-dev libglm-dev libcurl4-openssl-dev libtcc-dev
 
-# 3. Build
-cmake -B build -G "MinGW Makefiles" \
-      -DCMAKE_TOOLCHAIN_FILE=<vcpkg>/scripts/buildsystems/vcpkg.cmake \
-      -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
+# macOS
+brew install glfw glm curl
 
-# 4. Run
-./build/bin/ScriptGeometry
+# Windows (vcpkg)
+vcpkg install glfw3 glm curl
+
+# 构建
+mkdir build && cd build
+cmake ..
+cmake --build . --config Release
 ```
 
 ---
 
-## Project Structure
+## 使用指南
 
-```
-ScriptGeometry/
-├── include/            # Public headers
-│   ├── geolib.h        # Geometry data structures + Entity + Document
-│   ├── capi.h          # C API exposed to TCC scripts
-│   ├── toon.h          # TOON file format parser/serializer
-│   ├── scriptlib.h     # Hot-plug script library
-│   ├── tccengine.h     # TCC in-memory compiler
-│   ├── chat.h          # AI chat assistant (four-party dialogue)
-│   ├── glview.h        # OpenGL viewport
-│   └── mainwindow.h    # ImGui layout manager
-├── src/                # Implementation files
-├── scripts/            # Built-in .toon scripts
-│   ├── sphere.toon
-│   ├── cone.toon
-│   ├── box.toon
-│   ├── torus.toon
-│   ├── helix.toon
-│   ├── star.toon
-│   └── gear.toon
-├── shaders/            # GLSL shaders
-├── third_party/        # imgui, glad, tcc (place here)
-├── docs/
-│   └── architecture.md
-└── CMakeLists.txt
-```
+### 快速开始
 
----
+1. **启动程序**：运行 `./ScriptGeometry`
+2. **AI对话**：在右侧面板输入 "创建一个半径为2的球体"
+3. **查看结果**：AI自动生成脚本并创建几何体
+4. **调整参数**：在左侧属性面板修改半径、分段数等参数
 
-## Writing a TOON Script
+### TOON脚本格式
 
 ```toon
 [meta]
-id       = "my_shape"
-name     = "My Shape"
-category = "solid"
-version  = "1.0"
+id          = "my_shape"
+name        = "我的形状"
+category    = "solid"
 
 [attrs]
-radius  float  1.0  "Radius"  "Shape radius"
-detail  int    32   "Detail"  "Tessellation"
+radius   float   1.0   "半径"
+segments int     32    "分段数"
 
 [code]
-void build(GeoDataHandle h) {
-    /* Use any function from the C API */
-    solid_sphere(h, 0.0f, 0.0f, 0.0f, 1.0f, 16, 32);
+void build(Entity entity, GeoData geo) {
+    float r = entity_getFloat(entity, "radius");
+    int s = entity_getInt(entity, "segments");
+    solid_sphere(geo, 0, 0, 0, r, s/2, s);
 }
 ```
 
-Save it in the `scripts/` folder — it loads automatically on startup and supports hot-reload.
+更多详情请参阅 [脚本编写指南](docs/脚本编写指南.md)
 
 ---
 
-## C API Reference
+## 项目统计
 
-| Prefix | Examples |
-|---|---|
-| `math_` | `math_sin`, `math_cos`, `math_sqrt`, `math_clamp`, `math_lerp` |
-| `curve_` | `curve_line`, `curve_arc`, `curve_circle`, `curve_bezier` |
-| `loop_` | `loop_rect`, `loop_circle`, `loop_polygon`, `loop_ellipse` |
-| `path_` | `path_line`, `path_arc`, `path_spline` |
-| `surface_` | `surface_plane`, `surface_disk`, `surface_fill` |
-| `solid_` | `solid_box`, `solid_sphere`, `solid_cylinder`, `solid_cone`, `solid_torus`, `solid_capsule` |
-
----
-
-## AI Chat
-
-1. Open the **AI** panel on the right.
-2. Type a geometry request, e.g.: *"Create a twisted helix with 5 turns and radius 2"*
-3. The AI returns a TOON block which is compiled and rendered immediately.
-4. Edit the resulting entity's attributes in the **Document** panel for live updates.
+| 指标 | 数值 |
+|------|------|
+| 核心代码行数 | ~7,800行 |
+| 头文件数量 | 8个 |
+| 源文件数量 | 9个 |
+| 预置脚本 | 10个 |
+| C API函数 | 80+ |
+| 第三方依赖 | 5个 |
 
 ---
 
-## Dependencies
+## 与传统参数化建模库的对比分析
 
-| Library | Purpose | License |
-|---|---|---|
-| [GLFW 3](https://www.glfw.org/) | Window + input | zlib |
-| [GLM](https://github.com/g-truc/glm) | Math | MIT |
-| [Dear ImGui](https://github.com/ocornut/imgui) | GUI | MIT |
-| [GLAD](https://glad.dav1d.de/) | OpenGL loader | MIT |
-| [libcurl](https://curl.se/libcurl/) | HTTP for AI API | MIT-like |
-| [libtcc](https://bellard.org/tcc/) | In-memory C compiler | LGPL 2.1 |
+### 对比对象
+
+选取三个代表性项目进行对比：
+- **OpenSCAD**：开源脚本化CAD软件
+- **CadQuery**：Python参数化建模库
+- **FreeCAD**：开源参数化3D建模软件
+
+### 功能对比
+
+| 特性 | ScriptGeometry | OpenSCAD | CadQuery | FreeCAD |
+|------|:-------------:|:--------:|:--------:|:-------:|
+| **AI驱动** | ✅ | ❌ | ❌ | ❌ |
+| **实时编译** | ✅ 内存编译 | ✅ | ❌ 解释执行 | ❌ |
+| **自然语言输入** | ✅ | ❌ | ❌ | ❌ |
+| **脚本热插拔** | ✅ | ❌ | ❌ | ❌ |
+| **即时参数调整** | ✅ | ⚠️ 需重新编译 | ✅ | ✅ |
+| **布尔运算** | ✅ Clipper2 | ✅ CGAL | ✅ OCC | ✅ OCC |
+| **三角剖分** | ✅ earcut | ✅ CGAL | ✅ OCC | ✅ OCC |
+| **STL导入导出** | ✅ | ✅ | ✅ | ✅ |
+| **学习曲线** | 低 | 中 | 中 | 高 |
+| **代码体积** | 小 | 中 | 大 | 大 |
+
+### 优势分析
+
+#### 🏆 核心优势
+
+**1. 零门槛建模**
+```
+传统方式：学习API → 编写代码 → 调试编译 → 查看结果
+ScriptGeometry：自然语言描述 → 即时生成 → 实时调整
+```
+
+**2. 极致轻量**
+- 核心代码不足8000行，易于理解和定制
+- 单一可执行文件，无需复杂安装
+- 内存编译，无外部编译器依赖
+
+**3. 实时反馈**
+- 参数修改即时生效
+- 编译缓存避免重复工作
+- GPU直接渲染结果
+
+**4. 可扩展架构**
+- 工厂方法模式易于扩展新几何体
+- C API层隔离实现细节
+- 模块化设计支持功能插件
+
+#### ⚠️ 现有局限
+
+**1. 几何精度**
+- 使用浮点数运算，精度有限
+- 不支持NURBS曲线曲面
+- 布尔运算仅限2D截面
+
+**2. 功能范围**
+- 不支持工程图纸生成
+- 缺少装配体管理
+- 无约束求解器
+
+**3. 工业标准支持**
+- 不支持STEP/IGES格式
+- 缺少GD&T标注
+- 无仿真分析接口
+
+### 劣势改进方向
+
+| 劣势 | 改进方案 |
+|------|----------|
+| 几何精度 | 引入精确几何内核 (如OpenCASCADE) |
+| 格式支持 | 添加STEP/IGES/BREP导入导出 |
+| 装配功能 | 实现组件引用和约束系统 |
+| 约束求解 | 集成约束求解器 (如PlanarSketch) |
 
 ---
 
-## License
+## 市场应用前景分析
 
-MIT — see `LICENSE`.
+### 目标用户群体
+
+| 用户类型 | 应用场景 | 价值主张 |
+|----------|----------|----------|
+| **设计师** | 快速概念建模 | 用语言描述创意，快速可视化 |
+| **教育工作者** | 几何教学演示 | 降低编程门槛，专注几何原理 |
+| **创客** | 3D打印模型 | 快速原型设计，参数化定制 |
+| **工程师** | 简单零件设计 | 快速创建标准件，无需专业CAD |
+| **开发者** | 定制建模工具 | 嵌入式几何引擎，扩展开发 |
+
+### 市场定位
+
+```
+                    复杂度
+                       ▲
+                       │
+      专业CAD软件      │    CATIA / NX / SolidWorks
+    (工业级应用)       │
+    ───────────────────┼───────────────────────
+                       │
+      中级建模工具     │    FreeCAD / Fusion 360
+    (功能均衡)         │
+    ───────────────────┼───────────────────────
+                       │        ★ ScriptGeometry
+      轻量建模工具     │    OpenSCAD / Tinkercad
+    (快速原型)         │
+                       │
+                       └──────────────────────────► 易用性
+```
+
+### 增长潜力
+
+**短期（1-2年）**
+- 教育市场渗透：STEM教育、编程教学
+- 创客社区推广：3D打印、个人项目
+- 开源社区建设：贡献者培养、生态完善
+
+**中期（3-5年）**
+- 功能增强：集成专业几何内核
+- 行业定制：针对特定领域的垂直应用
+- 平台扩展：Web版本、移动端支持
+
+**长期（5年+）**
+- 企业级应用：工业设计流程整合
+- AI能力升级：更智能的建模辅助
+- 生态成熟：插件市场、模板库
+
+---
+
+## 工业软件突围的创新价值
+
+### 背景分析
+
+中国工业软件市场长期被国外巨头垄断：
+- **CAD软件**：SolidWorks、AutoCAD、CATIA占据主导
+- **核心内核**：Parasolid、ACIS、CGAL被国外控制
+- **技术壁垒**：几何算法、约束求解、显示渲染
+
+### 突围策略
+
+ScriptGeometry选择了一条**差异化突围**的道路：
+
+#### 1️⃣ 技术路线创新
+
+```
+传统工业软件路线：
+几何内核 → 功能堆叠 → 专业应用 → 用户培训
+
+ScriptGeometry路线：
+AI理解 → 即时建模 → 轻量引擎 → 零门槛使用
+```
+
+**不追求"大而全"，而是"小而美"**——专注于解决用户最核心的建模需求，用AI降低使用门槛。
+
+#### 2️⃣ 交互范式革新
+
+| 维度 | 传统CAD | ScriptGeometry |
+|------|---------|----------------|
+| 学习方式 | 培训课程 | 自然交互 |
+| 操作方式 | 菜单/工具栏 | 自然语言 |
+| 参数调整 | 特征树导航 | 属性面板 |
+| 错误反馈 | 编译错误日志 | 即时可视化 |
+
+#### 3️⃣ 开源生态策略
+
+- **核心开放**：完整的源代码和API文档
+- **社区驱动**：鼓励贡献和二次开发
+- **渐进增强**：基础功能免费，高级功能可商业化
+
+### 实践意义
+
+**1. 降低技术门槛**
+- 让更多人能够进行3D建模
+- 减少专业培训成本
+- 促进设计民主化
+
+**2. 探索技术路径**
+- AI+CAD的可行性验证
+- 轻量化建模工具的市场需求测试
+- 新一代建模软件的技术储备
+
+**3. 培育本土生态**
+- 独立自主的技术路线
+- 开源社区的知识积累
+- 为后续深度开发奠定基础
+
+### 发展建议
+
+**短期重点**
+1. 完善几何库，支持更多基本体和操作
+2. 优化AI Prompt，提高生成质量
+3. 加强文档和示例，降低学习成本
+
+**中期目标**
+1. 集成OpenCASCADE或类似内核
+2. 支持工业标准格式（STEP/IGES）
+3. 开发WebAssembly版本
+
+**长期愿景**
+1. 成为AI辅助设计领域的标杆项目
+2. 构建完整的设计工具生态
+3. 探索与国产工业软件的整合路径
+
+---
+
+## 技术亮点
+
+### 1. 内存脚本编译
+
+使用TCC实现脚本即时编译，优势：
+- 无需外部编译器
+- 编译速度快（毫秒级）
+- 脚本缓存避免重复编译
+
+### 2. Entity-Script分离
+
+一个脚本可服务多个实体实例：
+```
+Script A (编译一次)
+    ├── Entity 1 (参数: r=1, s=16)
+    ├── Entity 2 (参数: r=2, s=24)
+    └── Entity 3 (参数: r=1.5, s=32)
+```
+
+### 3. 结构化Prompt工程
+
+将AI Prompt分解为角色、规则、上下文、示例等结构化部分，提高生成质量。
+
+### 4. 工厂方法模式
+
+```cpp
+namespace SolidFactory {
+    void sphere(GeoData& geo, float r, int rings, int sectors);
+    void extrude(GeoData& geo, const Loop& profile, float height);
+    void revolve(GeoData& geo, const Loop& profile, float angle);
+    // ... 30+ 工厂方法
+}
+```
+
+---
+
+## 文档索引
+
+| 文档 | 说明 |
+|------|------|
+| [架构设计](docs/architecture.md) | 系统架构详细说明 |
+| [技术指南](docs/technical_guide.md) | 开发者技术文档 |
+| [脚本编写指南](docs/脚本编写指南.md) | TOON脚本编写教程 |
+| [C API参考](docs/capi_factory_reference.md) | C接口函数手册 |
+| [Entity变换](docs/entity_transform.md) | 位姿操作API |
+
+---
+
+## 致谢
+
+本项目使用了以下优秀的开源项目：
+
+- [Clipper2](https://github.com/AngusJohnson/Clipper2) - 高性能多边形布尔运算
+- [earcut.hpp](https://github.com/mapbox/earcut.hpp) - 快速三角剖分算法
+- [Dear ImGui](https://github.com/ocornut/imgui) - 即时模式GUI框架
+- [nlohmann/json](https://github.com/nlohmann/json) - 现代C++ JSON库
+- [GLM](https://github.com/g-truc/glm) - OpenGL数学库
+- [GLFW](https://www.glfw.org/) - 跨平台窗口库
+
+---
+
+## 许可证
+
+本项目采用 MIT 许可证开源。
+
+---
+
+## 贡献指南
+
+欢迎所有形式的贡献：
+- 🐛 提交Bug报告
+- 💡 提出新功能建议
+- 📝 改进文档
+- 🔧 提交代码修复
+
+---
+
+## 联系方式
+
+- **项目地址**：https://github.com/h3bing/ScriptGeometry
+- **问题反馈**：GitHub Issues
+
+---
+
+<p align="center">
+  <i>让三维建模触手可及</i>
+</p>

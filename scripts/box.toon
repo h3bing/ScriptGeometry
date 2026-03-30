@@ -1,20 +1,20 @@
 [meta]
 id          = "box_solid"
-name        = "Box"
+name        = "立方体"
 category    = "solid"
 version     = "1.0"
 author      = "ScriptGeometry"
-description = "Axis-aligned box"
+description = "立方体/长方体"
 
 [attrs]
-width    float  2.0   "Width"   "X extent"
-height   float  2.0   "Height"  "Y extent"
-depth    float  2.0   "Depth"   "Z extent"
+width   float   1.0     "宽度"     "X方向尺寸"
+height  float   1.0     "高度"     "Y方向尺寸"
+depth   float   1.0     "深度"     "Z方向尺寸"
 
 [code]
-void build(GeoDataHandle h) {
-    float w = 2.0f;
-    float ht = 2.0f;
-    float d = 2.0f;
-    solid_box(h, 0.0f, 0.0f, 0.0f, w, ht, d);
+void build(Entity entity, GeoData geo) {
+    float w = entity_getFloat(entity, "width");
+    float h = entity_getFloat(entity, "height");
+    float d = entity_getFloat(entity, "depth");
+    solid_box(geo, 0.0f, 0.0f, 0.0f, w, h, d);
 }

@@ -1,33 +1,38 @@
 [meta]
 id          = "helix_curve"
-name        = "Helix"
+name        = "螺旋线"
 category    = "curve"
 version     = "1.0"
 author      = "ScriptGeometry"
-description = "3D parametric helix"
+description = "3D螺旋曲线"
 
 [attrs]
-radius   float  1.0   "Radius"  "Helix radius"
-pitch    float  0.5   "Pitch"   "Vertical distance per revolution"
-turns    float  4.0   "Turns"   "Number of full rotations"
-samples  int    128   "Samples" "Number of line segments"
+radius      float   1.0     "半径"     "螺旋半径"
+height      float   4.0     "高度"     "总高度"
+turns       int     5       "圈数"     "螺旋圈数"
+samples     int     200     "采样数"   "曲线采样点数"
 
 [code]
-void build(GeoDataHandle h) {
-    float radius  = 1.0f;
-    float pitch   = 0.5f;
-    float turns   = 4.0f;
-    int   samples = 128;
-    float pi2     = 6.28318530718f;
+void build(Entity entity, GeoData geo) {
+    float radius = entity_getFloat(entity, "radius");
+    float height = entity_getFloat(entity, "height");
+    int turns = entity_getInt(entity, "turns");
+    int samples = entity_getInt(entity, "samples");
 
-    float pts[129 * 3];
-    int i;
-    for (i = 0; i <= samples; i++) {
-        float t     = (float)i / (float)samples;
-        float angle = t * turns * pi2;
-        pts[i*3+0]  = radius * math_cos(angle);
-        pts[i*3+1]  = t * turns * pitch;
-        pts[i*3+2]  = radius * math_sin(angle);
+    float step = height / samples;
+    float angleStep = 2.0f * CAPI_PI * turns / samples;
+
+    uint32_t prev = 0;
+    for (int i = 0; i <= samples; i++) {
+        float a = angleStep * i;
+        float y = step * i - height * 0.5f;
+        float x = radius * math_cos(a);
+        float z = radius * math_sin(a);
+
+        uint32_t cur = geo_addVertex(geo, x, y, z, 0, 1, 0, 0, 0);
+        if (i > 0) {
+            geo_addEdge(geo, prev, cur);
+        }
+        prev = cur;
     }
-    curve_polyline(h, pts, samples + 1);
 }

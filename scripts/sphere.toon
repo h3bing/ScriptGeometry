@@ -1,20 +1,22 @@
 [meta]
 id          = "sphere_solid"
-name        = "Sphere"
+name        = "球体"
 category    = "solid"
 version     = "1.0"
 author      = "ScriptGeometry"
-description = "UV sphere"
+description = "UV球体 - 从Entity读取属性"
 
 [attrs]
-radius   float  1.0   "Radius"   "Sphere radius"
-rings    int    24    "Rings"    "Latitude subdivisions"
-sectors  int    48    "Sectors"  "Longitude subdivisions"
+radius   float   1.0     "半径"     "球体半径"
+rings    int     24      "环数"     "纬度细分"
+sectors  int     48      "扇区数"   "经度细分"
 
 [code]
-void build(GeoDataHandle h) {
-    float r = 1.0f;
-    int   rings   = 24;
-    int   sectors = 48;
-    solid_sphere(h, 0.0f, 0.0f, 0.0f, r, rings, sectors);
+void build(Entity entity, GeoData geo) {
+    // 从Entity读取属性
+    float r = entity_getFloat(entity, "radius");
+    int rings = entity_getInt(entity, "rings");
+    int sectors = entity_getInt(entity, "sectors");
+
+    solid_sphere(geo, 0.0f, 0.0f, 0.0f, r, rings, sectors);
 }

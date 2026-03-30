@@ -1,0 +1,25 @@
+[meta]
+id          = "boolean_union_demo"
+name        = "Boolean Union Demo"
+category    = "surface"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "Demonstrates boolean union of two overlapping rectangles"
+
+[attrs]
+offset  float  0.5  "Offset"  "Offset between rectangles"
+
+[code]
+void build(GeoDataHandle h) {
+    /* Create two overlapping rectangles and perform union */
+    float o = 0.5f;
+
+    /* Rectangle 1: from (0,0) to (2,2) */
+    float rect1[] = {0,0, 2,0, 2,2, 0,2};
+
+    /* Rectangle 2: from (1,1) to (3,3) - overlaps with rect1 */
+    float rect2[] = {1,1, 3,1, 3,3, 1,3};
+
+    /* Perform boolean union - creates L-shaped polygon outline */
+    loop_union(h, rect1, 4, rect2, 4);
+}

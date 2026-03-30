@@ -101,6 +101,9 @@ public:
     /// Remove an entity from the GPU buffers
     void removeEntity(uint64_t entityId);
 
+    /// Clear all entities
+    void clearAll();
+
     /// Render all entities into the current framebuffer
     void render(int width, int height);
 
