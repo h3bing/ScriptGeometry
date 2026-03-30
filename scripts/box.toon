@@ -1,0 +1,20 @@
+[meta]
+id          = "box_solid"
+name        = "Box"
+category    = "solid"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "Axis-aligned box"
+
+[attrs]
+width    float  2.0   "Width"   "X extent"
+height   float  2.0   "Height"  "Y extent"
+depth    float  2.0   "Depth"   "Z extent"
+
+[code]
+void build(GeoDataHandle h) {
+    float w = 2.0f;
+    float ht = 2.0f;
+    float d = 2.0f;
+    solid_box(h, 0.0f, 0.0f, 0.0f, w, ht, d);
+}

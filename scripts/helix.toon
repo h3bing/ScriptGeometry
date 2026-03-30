@@ -1,0 +1,33 @@
+[meta]
+id          = "helix_curve"
+name        = "Helix"
+category    = "curve"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "3D parametric helix"
+
+[attrs]
+radius   float  1.0   "Radius"  "Helix radius"
+pitch    float  0.5   "Pitch"   "Vertical distance per revolution"
+turns    float  4.0   "Turns"   "Number of full rotations"
+samples  int    128   "Samples" "Number of line segments"
+
+[code]
+void build(GeoDataHandle h) {
+    float radius  = 1.0f;
+    float pitch   = 0.5f;
+    float turns   = 4.0f;
+    int   samples = 128;
+    float pi2     = 6.28318530718f;
+
+    float pts[129 * 3];
+    int i;
+    for (i = 0; i <= samples; i++) {
+        float t     = (float)i / (float)samples;
+        float angle = t * turns * pi2;
+        pts[i*3+0]  = radius * math_cos(angle);
+        pts[i*3+1]  = t * turns * pitch;
+        pts[i*3+2]  = radius * math_sin(angle);
+    }
+    curve_polyline(h, pts, samples + 1);
+}

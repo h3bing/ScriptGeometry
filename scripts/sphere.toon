@@ -1,0 +1,20 @@
+[meta]
+id          = "sphere_solid"
+name        = "Sphere"
+category    = "solid"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "UV sphere"
+
+[attrs]
+radius   float  1.0   "Radius"   "Sphere radius"
+rings    int    24    "Rings"    "Latitude subdivisions"
+sectors  int    48    "Sectors"  "Longitude subdivisions"
+
+[code]
+void build(GeoDataHandle h) {
+    float r = 1.0f;
+    int   rings   = 24;
+    int   sectors = 48;
+    solid_sphere(h, 0.0f, 0.0f, 0.0f, r, rings, sectors);
+}

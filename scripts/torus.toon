@@ -1,0 +1,22 @@
+[meta]
+id          = "torus_solid"
+name        = "Torus"
+category    = "solid"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "Ring torus"
+
+[attrs]
+major_radius  float  1.5   "Major Radius"  "Distance from center to tube center"
+minor_radius  float  0.4   "Minor Radius"  "Tube radius"
+rings         int    32    "Rings"         "Segments around the main circle"
+sectors       int    24    "Sectors"       "Segments around the tube"
+
+[code]
+void build(GeoDataHandle h) {
+    float R = 1.5f;
+    float r = 0.4f;
+    int   rings   = 32;
+    int   sectors = 24;
+    solid_torus(h, 0.0f, 0.0f, 0.0f, R, r, rings, sectors);
+}

@@ -1,0 +1,38 @@
+[meta]
+id          = "star_loop"
+name        = "Star"
+category    = "loop"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "Parametric star polygon"
+
+[attrs]
+points        int    5     "Points"       "Number of star tips"
+outer_radius  float  1.0   "Outer Radius" "Tip radius"
+inner_radius  float  0.4   "Inner Radius" "Valley radius"
+
+[code]
+void build(GeoDataHandle h) {
+    int   n  = 5;
+    float ro = 1.0f;
+    float ri = 0.4f;
+    int   count = n * 2;
+    float pts[60];  /* max 10-pointed star: 20 * 3 floats */
+    int   i;
+    float pi2 = 6.28318530718f;
+
+    for (i = 0; i < count; i++) {
+        float angle = pi2 * i / count - pi2 / 4.0f;
+        float r = (i % 2 == 0) ? ro : ri;
+        pts[i * 3 + 0] = r * math_cos(angle);
+        pts[i * 3 + 1] = r * math_sin(angle);
+        pts[i * 3 + 2] = 0.0f;
+    }
+    curve_polyline(h, pts, count);
+    /* close the loop */
+    float close_pts[6] = {
+        pts[(count-1)*3], pts[(count-1)*3+1], pts[(count-1)*3+2],
+        pts[0],           pts[1],             pts[2]
+    };
+    curve_polyline(h, close_pts, 2);
+}

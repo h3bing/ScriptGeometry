@@ -1,0 +1,23 @@
+[meta]
+id          = "cone_solid"
+name        = "Cone"
+category    = "solid"
+version     = "1.0"
+author      = "ScriptGeometry"
+description = "A simple cone solid"
+
+[attrs]
+radius   float  1.0   "Radius"      "Base radius of the cone"
+height   float  2.0   "Height"      "Total height of the cone"
+sectors  int    32    "Sectors"     "Number of angular subdivisions"
+
+[code]
+void build(GeoDataHandle h) {
+    /* Parameters are accessed via the host-injected global scope.
+       For demonstration they are hardcoded here; the host will
+       supply per-entity attribute values via a wrapper. */
+    float r  = 1.0f;
+    float ht = 2.0f;
+    int   s  = 32;
+    solid_cone(h, 0.0f, 0.0f, 0.0f, r, ht, s);
+}
